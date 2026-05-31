@@ -39,7 +39,9 @@ node server.js
 
 ## 저장 위치
 
-제출된 Markdown은 아래 폴더에 저장됩니다.
+제출된 Markdown은 현재 앱을 실행 중인 본인 PC의 임시 저장 폴더에 저장됩니다.
+
+정확한 위치는 아래 폴더입니다.
 
 ```text
 AX_PreQ/submissions/
