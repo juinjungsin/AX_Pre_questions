@@ -30,7 +30,7 @@
     <line x1="244" y1="76" x2="302" y2="76" stroke="#0EA5A0" stroke-width="3"/>
   </g>
   <line x1="560" y1="36" x2="560" y2="134" stroke="#FFFFFF" stroke-opacity=".65" stroke-width="2"/>
-  <g transform="translate(590 54)" font-family="Pretendard, Arial, sans-serif" fill="#FFFFFF">
+  <g transform="translate(590 54)" font-family="Pretendard, Malgun Gothic, Arial, sans-serif" fill="#FFFFFF">
     <text x="0" y="0" font-size="18">Keep doing. Keep going. That is the answer.</text>
     <text x="0" y="48" font-size="17">AX 컨설팅  |  AI 전환  |  교육·강의  |  실행·현장</text>
   </g>
