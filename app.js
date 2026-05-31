@@ -232,7 +232,6 @@ const requiredFields = new Set([
 ]);
 
 const MAIL_TO = "jongbin@gmail.com";
-const MAIL_BODY_LIMIT = 6000;
 
 const statusEl = document.querySelector("#saveStatus");
 const form = document.querySelector("#preqForm");
@@ -408,24 +407,17 @@ async function saveMarkdownWithFilePicker(markdown) {
 
 function openMailDraft(markdown, savedPath) {
   const subject = `[AX 사전인터뷰] ${valueOf("interviewee") || "이름미상"} / ${valueOf("role") || "역할미상"}`;
-  const savedLine = savedPath
-    ? `작성한 Markdown 파일은 내 PC의 다음 위치에 저장했습니다.\n${savedPath}\n\n`
-    : "";
-  const truncatedMarkdown = markdown.length > MAIL_BODY_LIMIT
-    ? markdown.slice(0, MAIL_BODY_LIMIT) + "\n\n...본문이 길어 일부만 표시했습니다. 저장된 .md 파일을 함께 확인해주세요."
-    : markdown;
+  const savedLine = savedPath ? `저장 파일명: ${savedPath}\n` : "";
   const body = [
-    "AX 사전 인터뷰 응답입니다.",
+    "AX 사전 인터뷰 응답 파일을 전달드립니다.",
     "",
-    savedLine,
-    "아래 내용은 자동으로 작성된 Markdown 본문입니다.",
+    savedLine + "작성 완료된 .md 파일을 이 메일에 첨부해서 발송해주세요.",
     "",
-    truncatedMarkdown
+    "감사합니다."
   ].join("\n");
 
   const mailto = `mailto:${encodeURIComponent(MAIL_TO)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   window.location.href = mailto;
-  return mailto;
 }
 
 async function submitForm(event) {
@@ -483,38 +475,16 @@ async function submitForm(event) {
     const result = await response.json();
     if (!result.ok) throw new Error(result.error || "Save failed");
 
-    const localText = savedFileName ? `내 PC 저장 완료: ${savedFileName}` : "브라우저 파일 저장 기능 미지원";
-    const mailText = result.mail?.sent ? "이메일 발송 완료" : `이메일 미발송: ${result.mail?.reason || "SMTP 미설정"}`;
-    const mailto = openMailDraft(markdown, savedFileName);
-    setStatus("내 PC 저장 완료 / 메일 작성 화면 열림", "ok");
-    preview.hidden = false;
-    preview.textContent = [
-      localText,
-      "기본 메일 앱 작성 화면을 열었습니다. Gmail이나 Outlook이 기본 메일로 설정되어 있으면 그 화면에서 내용을 확인하고 보내면 됩니다.",
-      `메일 작성 링크: ${mailto}`,
-      "",
-      `서버 저장 파일: ${result.fileName}`,
-      `서버 저장 경로: ${result.filePath}`,
-      mailText,
-      "",
-      markdown
-    ].join("\n");
+    openMailDraft(markdown, savedFileName);
+    setStatus("저장 완료 / 메일 창에서 파일 첨부 후 발송", "ok");
+    preview.hidden = true;
+    preview.textContent = "";
   } catch (error) {
     if (savedFileName) {
-      const mailto = openMailDraft(markdown, savedFileName);
-      setStatus("내 PC 저장 완료 / 메일 작성 화면 열림", "ok");
-      preview.hidden = false;
-      preview.textContent = [
-        `내 PC 저장 완료: ${savedFileName}`,
-        "",
-        "기본 메일 앱 작성 화면을 열었습니다. Gmail이나 Outlook이 기본 메일로 설정되어 있으면 그 화면에서 내용을 확인하고 보내면 됩니다.",
-        `메일 작성 링크: ${mailto}`,
-        "",
-        "Node 서버 저장과 SMTP 직접 발송은 실행되지 않았습니다.",
-        "페이지를 파일로 열었거나 GitHub 정적 페이지에서 실행 중이면 정상적인 상황입니다.",
-        "",
-        markdown
-      ].join("\n");
+      openMailDraft(markdown, savedFileName);
+      setStatus("저장 완료 / 메일 창에서 파일 첨부 후 발송", "ok");
+      preview.hidden = true;
+      preview.textContent = "";
       return;
     }
 
