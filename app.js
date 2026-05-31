@@ -374,16 +374,21 @@ function fileName() {
   return `${date}_사전인터뷰_${person}_${role}.md`;
 }
 
-function downloadMarkdown() {
-  const blob = new Blob([buildMarkdown() + "\n"], { type: "text/markdown;charset=utf-8" });
+function downloadMarkdownContent(markdown, targetFileName = fileName()) {
+  const blob = new Blob([markdown + "\n"], { type: "text/markdown;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = fileName();
+  link.download = targetFileName;
   document.body.appendChild(link);
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+  return targetFileName;
+}
+
+function downloadMarkdown() {
+  return downloadMarkdownContent(buildMarkdown());
 }
 
 async function saveMarkdownWithFilePicker(markdown) {
@@ -447,6 +452,9 @@ async function submitForm(event) {
 
   try {
     savedFileName = await saveMarkdownWithFilePicker(markdown);
+    if (!savedFileName) {
+      savedFileName = downloadMarkdownContent(markdown);
+    }
   } catch (error) {
     if (error.name === "AbortError") {
       setStatus("파일 저장 취소", "error");
@@ -470,44 +478,9 @@ async function submitForm(event) {
     return;
   }
 
-  try {
-    const response = await fetch("/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        date: valueOf("date").replaceAll("-", ""),
-        interviewee: valueOf("interviewee"),
-        role: valueOf("role"),
-        markdown
-      })
-    });
-
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const result = await response.json();
-    if (!result.ok) throw new Error(result.error || "Save failed");
-
-    openMailDraft(markdown, savedFileName);
-    setStatus("저장 완료 / 메일 창에서 파일 첨부 후 발송", "ok");
-    showSuccessMessage(savedFileName);
-  } catch (error) {
-    if (savedFileName) {
-      openMailDraft(markdown, savedFileName);
-      setStatus("저장 완료 / 메일 창에서 파일 첨부 후 발송", "ok");
-      showSuccessMessage(savedFileName);
-      return;
-    }
-
-    setStatus("저장 실패: 폴더 선택 또는 다운로드 필요", "error");
-    showNoticeMessage([
-      "저장 서버에 연결하지 못했습니다.",
-      error.message,
-      "",
-      "해결 방법:",
-      "1. '.md 다운로드' 버튼으로 파일을 직접 저장하세요.",
-      "2. Chrome 또는 Edge 최신 버전에서 다시 시도하세요.",
-      "3. 메일 발송까지 필요하면 node server.js로 실행하고 SMTP 설정을 해야 합니다."
-    ]);
-  }
+  openMailDraft(markdown, savedFileName);
+  setStatus("저장 완료 / 메일 창에서 파일 첨부 후 발송", "ok");
+  showSuccessMessage(savedFileName);
 }
 
 function validateRequiredFields() {
