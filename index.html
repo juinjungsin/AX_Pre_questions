@@ -155,8 +155,9 @@
             <p>작성 완료를 누르면 답변이 <strong>Markdown(.md) 문서</strong>로 저장됩니다.</p>
             <p>Markdown은 메모장처럼 가볍지만 제목, 질문, 답변 구조가 깔끔하게 남는 문서 형식입니다. AI가 나중에 인터뷰 내용을 읽고 분석하기 좋아서, AX 컨설팅 자료는 이 형식으로 모읍니다.</p>
             <p><strong>내 PC 저장 폴더 선택</strong>을 먼저 누르면, 선택한 폴더 안에 <code>submissions</code> 폴더가 자동으로 만들어지고 그 안에 설문 결과가 저장됩니다.</p>
-            <p>Node 서버로 실행 중인 경우에는 앱 폴더 안의 <code>submissions</code>에도 함께 저장됩니다. 메일 발송 설정(SMTP)이 되어 있으면 같은 내용이 <code>jongbin@gmail.com</code>으로도 자동 발송됩니다.</p>
-            <p>메일 설정이나 서버가 없어도, 저장 폴더를 선택해두면 본인 PC에 `.md` 파일을 남길 수 있습니다.</p>
+            <p><strong>작성 완료: 저장 및 발송</strong>을 누르면 먼저 내 PC에 `.md` 파일을 저장한 뒤, 기본 메일 작성 화면을 엽니다. Gmail이나 Outlook이 기본 메일로 설정되어 있으면 그 작성 화면으로 연결됩니다.</p>
+            <p>메일은 바로 발송되지 않고 작성 화면으로 열립니다. 내용을 확인한 뒤 직접 보내면 됩니다.</p>
+            <p>Node 서버로 실행 중인 경우에는 앱 폴더 안의 <code>submissions</code>에도 함께 저장됩니다. SMTP 직접 발송 설정이 되어 있으면 서버에서도 메일 발송을 시도합니다.</p>
           </div>
           <div class="buttonRow">
             <button type="button" class="secondary" id="pickFolderBtn">내 PC 저장 폴더 선택</button>

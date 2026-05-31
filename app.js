@@ -231,6 +231,9 @@ const requiredFields = new Set([
   "driveData"
 ]);
 
+const MAIL_TO = "jongbin@gmail.com";
+const MAIL_BODY_LIMIT = 6000;
+
 const statusEl = document.querySelector("#saveStatus");
 const form = document.querySelector("#preqForm");
 const preview = document.querySelector("#preview");
@@ -415,6 +418,23 @@ async function pickSaveFolder() {
   }
 }
 
+async function ensureSaveFolder() {
+  if (selectedDirectoryHandle) return true;
+  if (!("showDirectoryPicker" in window)) return false;
+
+  try {
+    selectedDirectoryHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+    await selectedDirectoryHandle.getDirectoryHandle("submissions", { create: true });
+    return true;
+  } catch (error) {
+    if (error.name === "AbortError") {
+      setStatus("저장 폴더 선택 취소", "error");
+      return false;
+    }
+    throw error;
+  }
+}
+
 async function saveMarkdownToPickedFolder(markdown) {
   if (!selectedDirectoryHandle) return null;
 
@@ -427,15 +447,53 @@ async function saveMarkdownToPickedFolder(markdown) {
   return `${selectedDirectoryHandle.name}/submissions/${fileName()}`;
 }
 
+function openMailDraft(markdown, savedPath) {
+  const subject = `[AX 사전인터뷰] ${valueOf("interviewee") || "이름미상"} / ${valueOf("role") || "역할미상"}`;
+  const savedLine = savedPath
+    ? `작성한 Markdown 파일은 내 PC의 다음 위치에 저장했습니다.\n${savedPath}\n\n`
+    : "";
+  const truncatedMarkdown = markdown.length > MAIL_BODY_LIMIT
+    ? markdown.slice(0, MAIL_BODY_LIMIT) + "\n\n...본문이 길어 일부만 표시했습니다. 저장된 .md 파일을 함께 확인해주세요."
+    : markdown;
+  const body = [
+    "AX 사전 인터뷰 응답입니다.",
+    "",
+    savedLine,
+    "아래 내용은 자동으로 작성된 Markdown 본문입니다.",
+    "",
+    truncatedMarkdown
+  ].join("\n");
+
+  const mailto = `mailto:${encodeURIComponent(MAIL_TO)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailto;
+  return mailto;
+}
+
 async function submitForm(event) {
   event.preventDefault();
   if (!validateRequiredFields()) return;
 
   const markdown = buildMarkdown();
-  setStatus("저장/발송 중...");
+  setStatus("내 PC에 저장 중...");
   let pickedFolderPath = null;
 
   try {
+    if (!selectedDirectoryHandle) {
+      const hasFolder = await ensureSaveFolder();
+      if (!hasFolder) {
+        preview.hidden = false;
+        preview.textContent = [
+          "내 PC 저장 폴더를 선택하지 않아 자동 저장을 진행하지 못했습니다.",
+          "",
+          "해결 방법:",
+          "1. '내 PC 저장 폴더 선택'을 누른 뒤 다시 작성 완료를 누르세요.",
+          "2. 또는 '.md 다운로드' 버튼으로 파일을 직접 저장하세요.",
+          "",
+          markdown
+        ].join("\n");
+        return;
+      }
+    }
     pickedFolderPath = await saveMarkdownToPickedFolder(markdown);
   } catch (error) {
     setStatus("선택한 폴더 저장 실패", "error");
@@ -467,21 +525,35 @@ async function submitForm(event) {
     const result = await response.json();
     if (!result.ok) throw new Error(result.error || "Save failed");
 
-    const localText = pickedFolderPath ? `선택 폴더 저장 완료: ${pickedFolderPath}` : "서버 폴더 저장 완료";
+    const localText = pickedFolderPath ? `내 PC 저장 완료: ${pickedFolderPath}` : "서버 폴더 저장 완료";
     const mailText = result.mail?.sent ? "이메일 발송 완료" : `이메일 미발송: ${result.mail?.reason || "SMTP 미설정"}`;
-    setStatus(`저장 완료 / ${mailText}`, "ok");
+    const mailto = openMailDraft(markdown, pickedFolderPath);
+    setStatus("내 PC 저장 완료 / 메일 작성 화면 열림", "ok");
     preview.hidden = false;
-    preview.textContent = `${localText}\n서버 저장 파일: ${result.fileName}\n서버 저장 경로: ${result.filePath}\n${mailText}\n\n` + markdown;
+    preview.textContent = [
+      localText,
+      "기본 메일 앱 작성 화면을 열었습니다. Gmail이나 Outlook이 기본 메일로 설정되어 있으면 그 화면에서 내용을 확인하고 보내면 됩니다.",
+      `메일 작성 링크: ${mailto}`,
+      "",
+      `서버 저장 파일: ${result.fileName}`,
+      `서버 저장 경로: ${result.filePath}`,
+      mailText,
+      "",
+      markdown
+    ].join("\n");
   } catch (error) {
     if (pickedFolderPath) {
-      setStatus("내 PC 저장 완료 / 서버 연결 없음", "ok");
+      const mailto = openMailDraft(markdown, pickedFolderPath);
+      setStatus("내 PC 저장 완료 / 메일 작성 화면 열림", "ok");
       preview.hidden = false;
       preview.textContent = [
         `내 PC 저장 완료: ${pickedFolderPath}`,
         "",
-        "서버 저장과 메일 발송은 실행되지 않았습니다.",
+        "기본 메일 앱 작성 화면을 열었습니다. Gmail이나 Outlook이 기본 메일로 설정되어 있으면 그 화면에서 내용을 확인하고 보내면 됩니다.",
+        `메일 작성 링크: ${mailto}`,
+        "",
+        "Node 서버 저장과 SMTP 직접 발송은 실행되지 않았습니다.",
         "페이지를 파일로 열었거나 GitHub 정적 페이지에서 실행 중이면 정상적인 상황입니다.",
-        "메일 발송까지 필요하면 node server.js로 실행하고 SMTP 설정을 해야 합니다.",
         "",
         markdown
       ].join("\n");
