@@ -480,15 +480,43 @@ function openMailDraft(markdown, savedPath) {
   window.location.href = mailto;
 }
 
-function showSuccessMessage(savedFileName) {
+async function shareMarkdownFile(markdown, savedFileName) {
+  if (!navigator.share || !window.File) return false;
+
+  const attachment = new File([markdown + "\n"], savedFileName || fileName(), {
+    type: "text/markdown"
+  });
+
+  if (navigator.canShare && !navigator.canShare({ files: [attachment] })) {
+    return false;
+  }
+
+  try {
+    await navigator.share({
+      title: `[AX 사전인터뷰] ${valueOf("interviewee") || "이름미상"}`,
+      text: "AX 사전 인터뷰 응답 파일입니다. Gmail 또는 Outlook을 선택해 발송해주세요.",
+      files: [attachment]
+    });
+    return true;
+  } catch (error) {
+    return error.name === "AbortError";
+  }
+}
+
+function showSuccessMessage(savedFileName, usedShareSheet) {
   preview.hidden = false;
   preview.classList.add("successPreview");
-  preview.textContent = [
-    `내 PC 저장 완료: ${savedFileName || fileName()}`,
-    "",
-    "기본 메일 앱 작성 화면을 열었습니다. Gmail이나 Outlook이 기본 메일로 설정되어 있으면 그 화면에서 내용을 확인하고 보내면 됩니다.",
-    `메일 작성 링크: mailto:${MAIL_TO}`
-  ].join("\n");
+  const lines = [`내 PC 저장 완료: ${savedFileName || fileName()}`, ""];
+
+  if (usedShareSheet) {
+    lines.push("파일 첨부 공유창을 열었습니다. Gmail이나 Outlook을 선택해 발송해주세요.");
+  } else {
+    lines.push("이 브라우저에서는 파일 자동 첨부가 지원되지 않아 메일 작성 화면을 열었습니다.");
+    lines.push("저장된 .md 파일을 메일에 직접 첨부한 뒤 발송해주세요.");
+    lines.push(`메일 작성 링크: mailto:${MAIL_TO}`);
+  }
+
+  preview.textContent = lines.join("\n");
 }
 
 function showNoticeMessage(lines) {
@@ -533,9 +561,12 @@ async function submitForm(event) {
     return;
   }
 
-  openMailDraft(markdown, savedFileName);
-  setStatus("저장 완료 / 메일 창에서 파일 첨부 후 발송", "ok");
-  showSuccessMessage(savedFileName);
+  const shared = await shareMarkdownFile(markdown, savedFileName);
+  if (!shared) {
+    openMailDraft(markdown, savedFileName);
+  }
+  setStatus(shared ? "저장 완료 / 파일 첨부 공유창 열림" : "저장 완료 / 메일 창에서 파일 첨부 후 발송", "ok");
+  showSuccessMessage(savedFileName, shared);
   saveDraft(false);
 }
 
