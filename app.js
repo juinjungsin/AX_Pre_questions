@@ -32,8 +32,8 @@ const questionSets = {
   ],
   decision: [
     "이 업무에서 좋은 결과와 나쁜 결과를 가르는 기준은 무엇인가요?",
-    "숫자로 보는 기준이 있나요? 예: 원가율, 매출 하락률, 가맹점 수, 처리일수",
-    "정성적으로 보는 기준이 있나요? 예: 대표 성향, 협업 가능성, 브랜드 감각, 점주 반응",
+    "숫자로 보는 기준이 있나요? 예: 매출 하락률, 처리일수, 오류율, 비용 절감액",
+    "정성적으로 보는 기준이 있나요? 예: 협업 가능성, 고객 반응, 실행 난이도, 리스크 수준",
     "어떤 조건이면 즉시 대표에게 보고해야 하나요?",
     "어떤 조건이면 진행 중단, 보류, 추가 확인이 필요한가요?"
   ],
@@ -56,7 +56,7 @@ const questionHints = {
   "업무가 잘 끝났다고 판단하는 기준은 무엇인가요?": "내가 이 업무를 끝냈다고 느끼는 조건을 적어주세요. 예: 대표 승인, 누락자료 0건, 매장 조치 완료.",
 
   "최근 2주 안에 가장 시간이 많이 걸린 업무 하나를 골라주세요.": "최근에 오래 걸렸거나 다시 하기 싫었던 업무 하나만 떠올려 주세요.",
-  "그 업무는 어떤 요청에서 시작됐나요?": "누가, 어떤 말이나 상황으로 일을 시작하게 했는지 적어주세요. 예: 대표 지시, 가맹점 문의, 회의 후속.",
+  "그 업무는 어떤 요청에서 시작됐나요?": "누가, 어떤 말이나 상황으로 일을 시작하게 했는지 적어주세요. 예: 리더 지시, 고객 문의, 회의 후속.",
   "처음 받은 자료는 무엇이었고 어디에 있었나요?": "처음 참고한 파일이나 메시지가 어디 있었는지 적어주세요. 예: 구글드라이브, 카톡방, 메일, 개인 PC.",
   "중간에 추가로 찾아야 했던 자료는 무엇인가요?": "일하다가 부족해서 다시 찾거나 요청한 자료를 적어주세요.",
   "최종 산출물은 어떤 파일, 문서, 보고, 메시지였나요?": "마지막에 만들어낸 결과물을 적어주세요. 예: 엑셀 파일, 문서, 슬라이드, 카톡 보고.",
@@ -77,8 +77,8 @@ const questionHints = {
   "실수가 나면 비용, 리스크, 대표 의사결정에 영향을 주는 업무는 무엇인가요?": "틀리면 큰 문제가 되는 일을 적어주세요. 예: 금액 계산, 계약 리스크, 매출 하락 판단.",
 
   "이 업무에서 좋은 결과와 나쁜 결과를 가르는 기준은 무엇인가요?": "이 업무가 잘됐는지 못됐는지 판단하는 기준을 적어주세요. 숫자도 좋고 느낌도 괜찮습니다.",
-  "숫자로 보는 기준이 있나요? 예: 원가율, 매출 하락률, 가맹점 수, 처리일수": "기준으로 보는 숫자가 있다면 적어주세요. 정확한 공식이 없어도 됩니다.",
-  "정성적으로 보는 기준이 있나요? 예: 대표 성향, 협업 가능성, 브랜드 감각, 점주 반응": "숫자로 표현하기 어렵지만 판단에 중요한 느낌이나 기준을 적어주세요.",
+  "숫자로 보는 기준이 있나요? 예: 매출 하락률, 처리일수, 오류율, 비용 절감액": "기준으로 보는 숫자가 있다면 적어주세요. 정확한 공식이 없어도 됩니다.",
+  "정성적으로 보는 기준이 있나요? 예: 협업 가능성, 고객 반응, 실행 난이도, 리스크 수준": "숫자로 표현하기 어렵지만 판단에 중요한 느낌이나 기준을 적어주세요.",
   "어떤 조건이면 즉시 대표에게 보고해야 하나요?": "바로 위로 올려야 하는 상황을 적어주세요. 예: 큰 클레임, 법적 리스크, 매출 급락.",
   "어떤 조건이면 진행 중단, 보류, 추가 확인이 필요한가요?": "일단 멈추고 확인해야 하는 기준을 적어주세요.",
 
@@ -88,121 +88,66 @@ const questionHints = {
   "AI가 대신하면 안 되는 업무는 무엇인가요?": "AI가 결정하면 위험한 일을 적어주세요. 예: 최종 금액 확정, 법률 판단, 인사 평가.",
   "AI가 답변할 때 반드시 근거를 보여줘야 하는 업무는 무엇인가요?": "출처가 꼭 필요한 일을 적어주세요. 예: 계약서 내용, 매출 수치, 법률/회계 이슈.",
   "AI가 자동으로 감지해줬으면 하는 이상 신호는 무엇인가요?": "미리 알려주면 좋은 위험 신호를 적어주세요. 예: 매출 급락, 원가율 이상, 클레임 증가.",
-  "AI가 매일 또는 매주 만들어주면 좋은 리포트는 무엇인가요?": "정기적으로 자동으로 받으면 좋은 보고서를 적어주세요.",
-
-  "인수 후보 브랜드가 들어오면 첫날 무엇부터 확인하나요?": "처음 보는 브랜드에서 가장 먼저 보는 항목을 적어주세요.",
-  "자료 요청 리스트는 어떻게 만들고, 누가 관리하나요?": "요청자료 목록을 만드는 방식과 관리자를 적어주세요.",
-  "후보 브랜드별 진행 상태는 어디에 기록하나요?": "진행 중, 보류, 완료 같은 상태를 어디에 적는지 알려주세요.",
-  "NDA 이후 자료 작성이 지연되는 가장 큰 이유는 무엇인가요?": "자료가 늦어지는 현실적인 이유를 적어주세요.",
-  "실사 Q&A에서 답변 출처를 어떻게 연결하나요?": "질문에 대한 답이 어떤 파일에서 나왔는지 표시하는 방식을 적어주세요.",
-  "추가 질문서는 누가 어떤 기준으로 작성하나요?": "추가로 물어볼 내용을 정하는 기준을 적어주세요.",
-  "인수 후보 간 비교표가 있다면 어떤 항목이 들어가야 하나요?": "브랜드끼리 비교할 때 필요한 칸 제목을 적어주세요.",
-  "AI가 자동으로 만들어주면 좋은 것은 자료 요청서, 리스크 요약, 대표 보고, 일정 추적 중 무엇인가요?": "가장 도움이 될 자동 산출물을 골라 적어주세요.",
-
-  "매출, 원가, 사입, 정산 자료는 각각 어디서 나오나요?": "각 숫자의 출처 시스템이나 파일을 적어주세요.",
-  "데이터 형식이 매번 같은가요, 매장/브랜드마다 다른가요?": "파일 양식이 통일되어 있는지, 매번 다른지 적어주세요.",
-  "월마감 또는 정산에서 가장 시간이 오래 걸리는 단계는 무엇인가요?": "마감 업무에서 제일 오래 걸리는 부분을 적어주세요.",
-  "이상치로 봐야 하는 숫자 기준은 무엇인가요?": "정상 범위를 벗어났다고 보는 기준을 적어주세요.",
-  "AI가 자동으로 찾아줬으면 하는 오류는 무엇인가요?": "계산 오류, 누락, 중복처럼 자동으로 잡아줬으면 하는 것을 적어주세요.",
-  "회계사에게 넘기기 전에 내부에서 먼저 확인해야 하는 항목은 무엇인가요?": "외부 전문가에게 넘기기 전 내부 체크리스트를 적어주세요.",
-  "대표 보고용 재무 요약은 어떤 형식이 가장 좋나요?": "표, 그래프, 한 문단 요약 등 보기 좋은 형식을 적어주세요.",
-  "숫자 분석에서 AI가 절대 단정하면 안 되는 영역은 무엇인가요?": "AI가 추정하면 위험한 숫자나 판단을 적어주세요.",
-
-  "매장 방문 전 어떤 자료를 확인하나요?": "방문 전에 보는 매출, 클레임, 이전 방문 기록 등을 적어주세요.",
-  "방문 후 기록은 어디에 남기나요?": "방문 결과를 적는 위치를 알려주세요.",
-  "가맹점 이슈는 접수, 처리, 완료가 어떻게 추적되나요?": "이슈가 들어오고 끝날 때까지의 흐름을 적어주세요.",
-  "점주 VOC나 클레임은 어떤 기준으로 분류하나요?": "문의, 불만, 요청, 긴급 같은 분류 기준을 적어주세요.",
-  "매출 하락 매장을 발견하면 어떤 순서로 원인을 확인하나요?": "매출이 떨어졌을 때 확인하는 순서를 적어주세요.",
-  "점포 등급이나 방문 주기는 어떤 기준으로 정하나요?": "어떤 매장을 자주 가고 덜 가는지 기준을 적어주세요.",
-  "AI가 방문 전 브리핑을 만들어준다면 어떤 내용이 필요하나요?": "방문 전에 미리 받아보면 좋은 요약 정보를 적어주세요.",
-  "AI가 방문 후 리포트를 만들어준다면 어떤 양식이어야 하나요?": "방문 후 자동 리포트에 들어갈 항목을 적어주세요.",
-
-  "경쟁 브랜드 조사는 어떤 주기로 하나요?": "매주, 매월, 필요할 때 등 조사 주기를 적어주세요.",
-  "시장 트렌드 자료는 어디서 찾나요?": "뉴스, 블로그, 유튜브, 리포트 등 주로 보는 곳을 적어주세요.",
-  "콘텐츠나 캠페인 성과는 어떤 지표로 판단하나요?": "조회수, 매출, 문의, 댓글 등 보는 기준을 적어주세요.",
-  "백채김치찌개 브랜드 운영에서 반복적으로 만드는 자료는 무엇인가요?": "정기적으로 만드는 마케팅/브랜드 자료를 적어주세요.",
-  "신규 인수 브랜드를 볼 때 브랜드 감각이나 소구점은 어떻게 평가하나요?": "좋은 브랜드라고 느끼는 포인트를 적어주세요.",
-  "AI가 경쟁사 페이지를 수집하고 비교표를 만들면 어떤 항목이 필요하나요?": "메뉴, 가격, 매장 수, 가맹 조건 등 비교할 칸을 적어주세요.",
-  "브랜드 리포지셔닝 아이디어를 만들 때 반드시 지켜야 할 기준은 무엇인가요?": "브랜드를 바꿀 때 건드리면 안 되는 원칙을 적어주세요.",
-  "AI가 만든 마케팅 문구에서 가장 경계해야 할 점은 무엇인가요?": "과장, 톤앤매너, 법적 표현 등 조심할 점을 적어주세요.",
-
-  "회의록, 일정, 요청사항, 의사결정은 어디에 남나요?": "회의 후 결정사항이 어디에 기록되는지 적어주세요.",
-  "누가 무엇을 언제까지 해야 하는지 추적하는 도구가 있나요?": "액션아이템 관리 방식이 있는지 알려주세요.",
-  "반복적으로 리마인드하는 업무는 무엇인가요?": "매번 다시 알려줘야 하는 일을 적어주세요.",
-  "문서 양식이나 파일명 규칙이 지켜지지 않아 생기는 문제는 무엇인가요?": "파일을 못 찾거나 버전이 헷갈린 사례를 적어주세요.",
-  "AI가 회의록에서 Action Item을 자동 추출하면 어떤 필드가 필요하나요?": "담당자, 마감일, 할 일, 상태처럼 필요한 칸을 적어주세요.",
-  "Google Drive 폴더 구조를 정리한다면 가장 먼저 손볼 곳은 어디인가요?": "가장 헷갈리는 폴더나 먼저 정리할 위치를 적어주세요.",
-
-  "우리 조직에서 AI를 도입하는 최종 목적은 무엇인가요?": "대표 관점에서 AI 도입으로 꼭 달성하고 싶은 결과를 적어주세요.",
-  "현재 대표님만 보고 판단하는 정보 중 직원들도 같은 기준으로 볼 수 있어야 하는 것은 무엇인가요?": "직원들도 같은 기준으로 봐야 위임 가능한 정보를 적어주세요.",
-  "최근 만든 대시보드는 어떤 문제를 해결하기 위해 만들었나요?": "대시보드를 만든 이유와 보고 싶었던 답을 적어주세요.",
-  "신규 인수 후보를 볼 때 첫 10분 안에 확인하는 기준은 무엇인가요?": "처음 10분 안에 보는 핵심 기준을 적어주세요.",
-  "인수 후보에서 즉시 탈락시키는 신호는 무엇인가요?": "더 볼 필요 없다고 판단하는 위험 신호를 적어주세요.",
-  "직원들이 스스로 판단해도 되는 영역과 대표 승인 없이는 안 되는 영역은 어떻게 나뉘나요?": "위임 가능한 일과 반드시 승인받아야 하는 일을 구분해 주세요.",
-  "AI가 들어오면 직원들에게 새로 위임하고 싶은 업무는 무엇인가요?": "AI 도움을 전제로 직원들이 맡아주면 좋은 일을 적어주세요.",
-  "30일 후 이번 교육이 효과 있었다고 판단할 기준은 무엇인가요?": "교육 후 무엇이 바뀌면 성공이라고 볼지 적어주세요."
+  "AI가 매일 또는 매주 만들어주면 좋은 리포트는 무엇인가요?": "정기적으로 자동으로 받으면 좋은 보고서를 적어주세요."
 };
 
 const roleSpecificSets = {
   ma: [
-    "인수 후보 브랜드가 들어오면 첫날 무엇부터 확인하나요?",
-    "자료 요청 리스트는 어떻게 만들고, 누가 관리하나요?",
-    "후보 브랜드별 진행 상태는 어디에 기록하나요?",
-    "NDA 이후 자료 작성이 지연되는 가장 큰 이유는 무엇인가요?",
-    "실사 Q&A에서 답변 출처를 어떻게 연결하나요?",
-    "추가 질문서는 누가 어떤 기준으로 작성하나요?",
-    "인수 후보 간 비교표가 있다면 어떤 항목이 들어가야 하나요?",
-    "AI가 자동으로 만들어주면 좋은 것은 자료 요청서, 리스크 요약, 대표 보고, 일정 추적 중 무엇인가요?"
+    "\uC0C8\uB85C\uC6B4 \uC0AC\uC5C5 \uAE30\uD68C\uB098 \uD504\uB85C\uC81D\uD2B8\uAC00 \uB4E4\uC5B4\uC654\uC744 \uB54C \uCC98\uC74C \uD655\uC778\uD558\uB294 \uC815\uBCF4\uB294 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uAC80\uD1A0 \uB300\uC0C1\uC758 \uB9E4\uB825\uB3C4\uC640 \uC704\uD5D8\uB3C4\uB97C \uD310\uB2E8\uD560 \uB54C \uAF2D \uBCF4\uB294 \uAE30\uC900\uC740 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uAC80\uD1A0 \uACFC\uC815\uC5D0\uC11C \uC5EC\uB7EC \uBD80\uC11C\uB098 \uC678\uBD80 \uD30C\uD2B8\uB108\uC5D0\uAC8C \uBC18\uBCF5\uD574\uC11C \uC694\uCCAD\uD558\uB294 \uC790\uB8CC\uB294 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uC9C4\uD589 \uC911, \uBCF4\uB958, \uC911\uB2E8, \uC2B9\uC778 \uAC19\uC740 \uC0C1\uD0DC\uB294 \uC5B4\uB514\uC5D0 \uAE30\uB85D\uD558\uACE0 \uC5B4\uB5BB\uAC8C \uACF5\uC720\uD558\uB098\uC694?",
+    "AI\uAC00 \uCD08\uAE30 \uAC80\uD1A0 \uBA54\uBAA8\uB97C \uB9CC\uB4E4\uC5B4\uC900\uB2E4\uBA74 \uBC18\uB4DC\uC2DC \uD3EC\uD568\uD574\uC57C \uD560 \uD56D\uBAA9\uC740 \uBB34\uC5C7\uC778\uAC00\uC694?"
   ],
   finance: [
-    "매출, 원가, 사입, 정산 자료는 각각 어디서 나오나요?",
-    "데이터 형식이 매번 같은가요, 매장/브랜드마다 다른가요?",
-    "월마감 또는 정산에서 가장 시간이 오래 걸리는 단계는 무엇인가요?",
-    "이상치로 봐야 하는 숫자 기준은 무엇인가요?",
-    "AI가 자동으로 찾아줬으면 하는 오류는 무엇인가요?",
-    "회계사에게 넘기기 전에 내부에서 먼저 확인해야 하는 항목은 무엇인가요?",
-    "대표 보고용 재무 요약은 어떤 형식이 가장 좋나요?",
-    "숫자 분석에서 AI가 절대 단정하면 안 되는 영역은 무엇인가요?"
+    "\uC22B\uC790 \uC790\uB8CC\uB97C \uBAA8\uC744 \uB54C \uAC00\uC7A5 \uC790\uC8FC \uD655\uC778\uD558\uB294 \uCD9C\uCC98\uB294 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uC6D4\uAC04 \uB610\uB294 \uC8FC\uAC04 \uBCF4\uACE0\uC5D0\uC11C \uBC18\uBCF5\uC801\uC73C\uB85C \uACC4\uC0B0\uD558\uAC70\uB098 \uBE44\uAD50\uD558\uB294 \uD56D\uBAA9\uC740 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uC22B\uC790\uAC00 \uC774\uC0C1\uD558\uB2E4\uACE0 \uD310\uB2E8\uD558\uB294 \uAE30\uC900\uC740 \uC5B4\uB5BB\uAC8C \uC815\uD574\uC838 \uC788\uB098\uC694?",
+    "\uBCF4\uACE0 \uC804\uC5D0 \uC0AC\uB78C\uC774 \uBC18\uB4DC\uC2DC \uAC80\uD1A0\uD574\uC57C \uD558\uB294 \uD56D\uBAA9\uC740 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "AI\uAC00 \uC22B\uC790 \uC790\uB8CC\uB97C \uC815\uB9AC\uD574\uC900\uB2E4\uBA74 \uC5B4\uB5A4 \uD615\uD0DC\uC758 \uD45C\uB098 \uC694\uC57D\uC774 \uAC00\uC7A5 \uB3C4\uC6C0\uC774 \uB418\uB098\uC694?"
   ],
   ops: [
-    "매장 방문 전 어떤 자료를 확인하나요?",
-    "방문 후 기록은 어디에 남기나요?",
-    "가맹점 이슈는 접수, 처리, 완료가 어떻게 추적되나요?",
-    "점주 VOC나 클레임은 어떤 기준으로 분류하나요?",
-    "매출 하락 매장을 발견하면 어떤 순서로 원인을 확인하나요?",
-    "점포 등급이나 방문 주기는 어떤 기준으로 정하나요?",
-    "AI가 방문 전 브리핑을 만들어준다면 어떤 내용이 필요하나요?",
-    "AI가 방문 후 리포트를 만들어준다면 어떤 양식이어야 하나요?"
+    "\uD604\uC7A5\uC774\uB098 \uACE0\uAC1D \uC811\uC810\uC5D0\uC11C \uBC18\uBCF5\uC801\uC73C\uB85C \uD655\uC778\uD558\uB294 \uCCB4\uD06C \uD56D\uBAA9\uC740 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uBB38\uC81C\uAC00 \uC811\uC218\uB41C \uB4A4 \uC644\uB8CC\uB420 \uB54C\uAE4C\uC9C0 \uC0C1\uD0DC\uB97C \uC5B4\uB5BB\uAC8C \uCD94\uC801\uD558\uB098\uC694?",
+    "\uBE44\uC2B7\uD55C \uBB38\uC81C\uAC00 \uBC18\uBCF5\uB420 \uB54C \uC6D0\uC778\uC744 \uCC3E\uB294 \uC21C\uC11C\uB294 \uC5B4\uB5BB\uAC8C \uB418\uB098\uC694?",
+    "\uD604\uC7A5 \uBC29\uBB38\uC774\uB098 \uC810\uAC80 \uC804 AI\uAC00 \uBBF8\uB9AC \uC815\uB9AC\uD574\uC8FC\uBA74 \uC88B\uC740 \uC815\uBCF4\uB294 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uC810\uAC80 \uD6C4 \uB9AC\uD3EC\uD2B8\uAC00 \uC790\uB3D9 \uC791\uC131\uB41C\uB2E4\uBA74 \uBC18\uB4DC\uC2DC \uB4E4\uC5B4\uAC00\uC57C \uD560 \uACB0\uB860\uACFC \uADFC\uAC70\uB294 \uBB34\uC5C7\uC778\uAC00\uC694?"
   ],
   marketing: [
-    "경쟁 브랜드 조사는 어떤 주기로 하나요?",
-    "시장 트렌드 자료는 어디서 찾나요?",
-    "콘텐츠나 캠페인 성과는 어떤 지표로 판단하나요?",
-    "백채김치찌개 브랜드 운영에서 반복적으로 만드는 자료는 무엇인가요?",
-    "신규 인수 브랜드를 볼 때 브랜드 감각이나 소구점은 어떻게 평가하나요?",
-    "AI가 경쟁사 페이지를 수집하고 비교표를 만들면 어떤 항목이 필요하나요?",
-    "브랜드 리포지셔닝 아이디어를 만들 때 반드시 지켜야 할 기준은 무엇인가요?",
-    "AI가 만든 마케팅 문구에서 가장 경계해야 할 점은 무엇인가요?"
+    "\uC2DC\uC7A5, \uACE0\uAC1D, \uACBD\uC7C1\uC0AC \uC815\uBCF4\uB97C \uC870\uC0AC\uD560 \uB54C \uC8FC\uB85C \uBCF4\uB294 \uCC44\uB110\uC740 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uCF58\uD150\uCE20\uB098 \uCEA0\uD398\uC778\uC758 \uC131\uACFC\uB97C \uD310\uB2E8\uD558\uB294 \uAE30\uC900\uC740 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uBE0C\uB79C\uB4DC \uD1A4\uC774\uB098 \uBA54\uC2DC\uC9C0\uB97C \uB9CC\uB4E4 \uB54C \uBC18\uB4DC\uC2DC \uC9C0\uCF1C\uC57C \uD558\uB294 \uAE30\uC900\uC740 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "AI\uAC00 \uC870\uC0AC \uC790\uB8CC\uB97C \uBE44\uAD50\uD45C\uB85C \uB9CC\uB4E4\uC5B4\uC900\uB2E4\uBA74 \uC5B4\uB5A4 \uD56D\uBAA9\uC774 \uD544\uC694\uD55C\uAC00\uC694?",
+    "AI\uAC00 \uB9CC\uB4E0 \uBB38\uAD6C\uB098 \uC544\uC774\uB514\uC5B4\uC5D0\uC11C \uC0AC\uB78C\uC774 \uBC18\uB4DC\uC2DC \uD655\uC778\uD574\uC57C \uD560 \uC704\uD5D8 \uC694\uC18C\uB294 \uBB34\uC5C7\uC778\uAC00\uC694?"
   ],
   pm: [
-    "회의록, 일정, 요청사항, 의사결정은 어디에 남나요?",
-    "누가 무엇을 언제까지 해야 하는지 추적하는 도구가 있나요?",
-    "반복적으로 리마인드하는 업무는 무엇인가요?",
-    "문서 양식이나 파일명 규칙이 지켜지지 않아 생기는 문제는 무엇인가요?",
-    "AI가 회의록에서 Action Item을 자동 추출하면 어떤 필드가 필요하나요?",
-    "Google Drive 폴더 구조를 정리한다면 가장 먼저 손볼 곳은 어디인가요?"
+    "\uD68C\uC758, \uC694\uCCAD\uC0AC\uD56D, \uC758\uC0AC\uACB0\uC815, \uB9C8\uAC10\uC77C\uC740 \uD604\uC7AC \uC5B4\uB514\uC5D0 \uAE30\uB85D\uB418\uB098\uC694?",
+    "\uB204\uAC00 \uBB34\uC5C7\uC744 \uC5B8\uC81C\uAE4C\uC9C0 \uD574\uC57C \uD558\uB294\uC9C0 \uB193\uCE58\uC9C0 \uC54A\uAE30 \uC704\uD574 \uC5B4\uB5A4 \uBC29\uC2DD\uC73C\uB85C \uD655\uC778\uD558\uB098\uC694?",
+    "\uBC18\uBCF5\uC801\uC73C\uB85C \uB9AC\uB9C8\uC778\uB4DC\uD558\uAC70\uB098 \uCDE8\uD569\uD558\uB294 \uC5C5\uBB34\uB294 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uBB38\uC11C \uC591\uC2DD, \uD30C\uC77C\uBA85, \uD3F4\uB354 \uC704\uCE58\uAC00 \uB2EC\uB77C\uC11C \uC0DD\uAE30\uB294 \uBB38\uC81C\uB294 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "AI\uAC00 \uD68C\uC758\uB85D\uC774\uB098 \uC694\uCCAD\uC0AC\uD56D\uC744 \uC815\uB9AC\uD574\uC900\uB2E4\uBA74 \uC5B4\uB5A4 \uD544\uB4DC\uAC00 \uAF2D \uD544\uC694\uD55C\uAC00\uC694?"
   ],
   ceo: [
-    "우리 조직에서 AI를 도입하는 최종 목적은 무엇인가요?",
-    "현재 대표님만 보고 판단하는 정보 중 직원들도 같은 기준으로 볼 수 있어야 하는 것은 무엇인가요?",
-    "최근 만든 대시보드는 어떤 문제를 해결하기 위해 만들었나요?",
-    "신규 인수 후보를 볼 때 첫 10분 안에 확인하는 기준은 무엇인가요?",
-    "인수 후보에서 즉시 탈락시키는 신호는 무엇인가요?",
-    "직원들이 스스로 판단해도 되는 영역과 대표 승인 없이는 안 되는 영역은 어떻게 나뉘나요?",
-    "AI가 들어오면 직원들에게 새로 위임하고 싶은 업무는 무엇인가요?",
-    "30일 후 이번 교육이 효과 있었다고 판단할 기준은 무엇인가요?"
+    "\uC870\uC9C1\uC5D0 AI\uB97C \uB3C4\uC785\uD588\uC744 \uB54C \uAC00\uC7A5 \uBA3C\uC800 \uBC14\uB00C\uC5B4\uC57C \uD558\uB294 \uC5C5\uBB34 \uBC29\uC2DD\uC740 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uC9C1\uC6D0\uB4E4\uC774 \uAC19\uC740 \uAE30\uC900\uC73C\uB85C \uBCF4\uACE0 \uD310\uB2E8\uD574\uC57C \uD558\uB294 \uD575\uC2EC \uC815\uBCF4\uB294 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uB300\uD45C\uB098 \uB9AC\uB354\uC5D0\uAC8C \uC62C\uB77C\uC624\uB294 \uBCF4\uACE0\uC5D0\uC11C \uAC00\uC7A5 \uC790\uC8FC \uBD80\uC871\uD55C \uC815\uBCF4\uB294 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uC9C1\uC6D0\uC5D0\uAC8C \uC704\uC784\uD574\uB3C4 \uB418\uB294 \uD310\uB2E8\uACFC \uBC18\uB4DC\uC2DC \uC2B9\uC778\uBC1B\uC544\uC57C \uD558\uB294 \uD310\uB2E8\uC740 \uC5B4\uB5BB\uAC8C \uAD6C\uBD84\uD558\uB098\uC694?",
+    "\uC774\uBC88 \uAD50\uC721\uACFC \uCEE8\uC124\uD305\uC774 \uC131\uACF5\uD588\uB2E4\uACE0 \uD310\uB2E8\uD560 30\uC77C \uB4A4\uC758 \uBCC0\uD654\uB294 \uBB34\uC5C7\uC778\uAC00\uC694?"
+  ],
+  custom: [
+    "\uC774 \uC9C1\uBB34\uC5D0\uC11C \uBC18\uBCF5\uC801\uC73C\uB85C \uB9CC\uB4E4\uC5B4\uB0B4\uB294 \uC0B0\uCD9C\uBB3C\uC740 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uC5C5\uBB34\uB97C \uC2DC\uC791\uD560 \uB54C \uBC18\uB4DC\uC2DC \uD655\uC778\uD574\uC57C \uD558\uB294 \uC785\uB825 \uC790\uB8CC\uB294 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uC5C5\uBB34\uAC00 \uB05D\uB0AC\uB2E4\uACE0 \uD310\uB2E8\uD558\uB294 \uC644\uB8CC \uAE30\uC900\uC740 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "\uB2E4\uB978 \uC0AC\uB78C\uC774\uB098 \uBD80\uC11C\uC640 \uC8FC\uACE0\uBC1B\uB294 \uC815\uBCF4 \uC911 \uC790\uC8FC \uB9C9\uD788\uB294 \uC9C0\uC810\uC740 \uBB34\uC5C7\uC778\uAC00\uC694?",
+    "AI\uAC00 \uC774 \uC9C1\uBB34\uB97C \uB3C4\uC640\uC900\uB2E4\uBA74 \uAC00\uC7A5 \uBA3C\uC800 \uB9E1\uAE30\uACE0 \uC2F6\uC740 \uCD08\uC548, \uC815\uB9AC, \uD655\uC778 \uC5C5\uBB34\uB294 \uBB34\uC5C7\uC778\uAC00\uC694?"
   ]
 };
+
+Object.values(roleSpecificSets).flat().forEach((question) => {
+  if (!questionHints[question]) {
+    questionHints[question] = "이 질문은 해당 역할에서 AI가 도울 수 있는 입력자료, 판단기준, 반복 산출물을 찾기 위한 질문입니다. 평소 일하는 순서대로 편하게 적어주세요.";
+  }
+});
 
 const sectionTitles = {
   role: "1. 역할 요약과 반복 산출물",
@@ -238,6 +183,7 @@ const statusEl = document.querySelector("#saveStatus");
 const form = document.querySelector("#preqForm");
 const preview = document.querySelector("#preview");
 const roleQuestionSet = document.querySelector("#roleQuestionSet");
+const customRoleSetWrap = document.querySelector("#customRoleSetWrap");
 
 function setStatus(text, type = "") {
   statusEl.textContent = text;
@@ -267,9 +213,21 @@ function renderQuestions(section, questions) {
   });
 }
 
+function selectedRoleQuestions() {
+  return roleSpecificSets[roleQuestionSet.value] || roleSpecificSets.custom;
+}
+
+function updateRoleSetUI() {
+  const isCustom = roleQuestionSet.value === "custom";
+  customRoleSetWrap.hidden = !isCustom;
+  const customField = form.elements.customRoleSet;
+  if (customField) customField.required = isCustom;
+}
+
 function renderAllQuestions() {
   Object.entries(questionSets).forEach(([section, questions]) => renderQuestions(section, questions));
-  renderQuestions("roleSpecific", roleSpecificSets[roleQuestionSet.value]);
+  updateRoleSetUI();
+  renderQuestions("roleSpecific", selectedRoleQuestions());
 }
 
 function valueOf(name) {
@@ -291,6 +249,12 @@ function applyFormData(data) {
     const field = form.elements[name];
     if (field) field.value = value;
   });
+}
+
+function roleSetLabel() {
+  const selected = roleQuestionSet.options[roleQuestionSet.selectedIndex]?.textContent || "-";
+  if (roleQuestionSet.value !== "custom") return selected;
+  return valueOf("customRoleSet") || "직접 입력";
 }
 
 function saveDraft(showMessage = false) {
@@ -324,7 +288,7 @@ function resetDraft() {
   localStorage.removeItem(DRAFT_STORAGE_KEY);
   form.reset();
   form.elements.date.value = getLocalDateValue();
-  renderQuestions("roleSpecific", roleSpecificSets[roleQuestionSet.value]);
+  renderAllQuestions();
   preview.hidden = true;
   preview.textContent = "";
   preview.classList.remove("successPreview");
@@ -366,6 +330,7 @@ function buildMarkdown() {
     `작성일: ${date}`,
     `인터뷰 대상: ${interviewee}`,
     `역할: ${role}`,
+    `역할별 추가 질문 세트: ${roleSetLabel()}`,
     `소속/팀: ${valueOf("team") || "-"}`,
     `인터뷰어: ${valueOf("interviewer") || "-"}`,
     `인터뷰 방식: ${valueOf("interviewMethod") || "-"}`,
@@ -600,10 +565,14 @@ function getLocalDateValue() {
 
 renderAllQuestions();
 form.elements.date.value = getLocalDateValue();
-loadDraft();
+if (loadDraft()) {
+  renderAllQuestions();
+  applyFormData(JSON.parse(localStorage.getItem(DRAFT_STORAGE_KEY)).values);
+}
 
 roleQuestionSet.addEventListener("change", () => {
-  renderQuestions("roleSpecific", roleSpecificSets[roleQuestionSet.value]);
+  updateRoleSetUI();
+  renderQuestions("roleSpecific", selectedRoleQuestions());
   saveDraft(false);
 });
 

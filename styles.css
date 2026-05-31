@@ -212,6 +212,11 @@ textarea:focus {
   margin-bottom: 16px;
 }
 
+.customRoleSet {
+  margin-top: 14px;
+  margin-bottom: 18px;
+}
+
 .question p {
   margin: 0 0 7px;
   color: #111827;
