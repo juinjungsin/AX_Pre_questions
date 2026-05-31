@@ -303,7 +303,7 @@ function fieldBlock(title, entries) {
 }
 
 function buildMarkdown() {
-  const date = valueOf("date") || new Date().toISOString().slice(0, 10);
+  const date = valueOf("date") || getLocalDateValue();
   const interviewee = valueOf("interviewee") || "이름 미입력";
   const role = valueOf("role") || "역할 미입력";
 
@@ -370,7 +370,7 @@ function buildMarkdown() {
 }
 
 function fileName() {
-  const date = (valueOf("date") || new Date().toISOString().slice(0, 10)).replaceAll("-", "");
+  const date = (valueOf("date") || getLocalDateValue()).replaceAll("-", "");
   const person = (valueOf("interviewee") || "unknown").replace(/[\\/:*?"<>|\s]+/g, "_");
   const role = (valueOf("role") || "role").replace(/[\\/:*?"<>|\s]+/g, "_");
   return `${date}_사전인터뷰_${person}_${role}.md`;
@@ -596,8 +596,16 @@ function validateRequiredFields() {
   return false;
 }
 
+function getLocalDateValue() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 renderAllQuestions();
-form.elements.date.value = new Date().toISOString().slice(0, 10);
+form.elements.date.value = getLocalDateValue();
 
 roleQuestionSet.addEventListener("change", () => {
   renderQuestions("roleSpecific", roleSpecificSets[roleQuestionSet.value]);
