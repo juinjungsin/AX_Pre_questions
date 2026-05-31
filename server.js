@@ -145,7 +145,7 @@ async function handleSubmit(req, res) {
     try {
       mail = await sendMail({
         to: MAIL_TO,
-        subject: `[SPBT AX 사전인터뷰] ${payload.interviewee || "이름미상"} / ${payload.role || "역할미상"}`,
+        subject: `[AX 사전인터뷰] ${payload.interviewee || "이름미상"} / ${payload.role || "역할미상"}`,
         body: markdown
       });
     } catch (error) {

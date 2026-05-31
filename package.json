@@ -2,7 +2,7 @@
   "name": "ax-preq",
   "version": "0.1.0",
   "private": true,
-  "description": "SPBT AX consulting pre-interview questionnaire",
+  "description": "AX consulting pre-interview questionnaire",
   "scripts": {
     "start": "node server.js"
   },
