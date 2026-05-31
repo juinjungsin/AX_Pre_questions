@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>AX 사전 인터뷰</title>
-    <link rel="stylesheet" href="styles.css?v=20260601-mobile-submit-fix" />
+    <link rel="stylesheet" href="styles.css?v=20260601-draft-save" />
   </head>
   <body>
     <header class="topbar">
@@ -160,6 +160,8 @@
             <p>메일은 바로 발송되지 않고 작성 화면으로 열립니다. 내용을 확인한 뒤 직접 보내면 됩니다.</p>
           </div>
           <div class="buttonRow">
+            <button type="button" class="secondary" id="draftSaveBtn">임시저장</button>
+            <button type="button" class="secondary" id="resetDraftBtn">재작성</button>
             <button type="button" class="secondary" id="previewBtn">Markdown 미리보기</button>
             <button type="button" class="secondary" id="downloadBtn">.md 다운로드</button>
             <button type="submit" class="primary">작성 완료: 저장 및 발송</button>
@@ -174,6 +176,6 @@
       <p>Keep doing. Keep going. That is the answer.</p>
     </footer>
 
-    <script src="app.js?v=20260601-mobile-submit-fix"></script>
+    <script src="app.js?v=20260601-draft-save"></script>
   </body>
 </html>

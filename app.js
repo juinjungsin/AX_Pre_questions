@@ -232,6 +232,7 @@ const requiredFields = new Set([
 ]);
 
 const MAIL_TO = "jongbin@gmail.com";
+const DRAFT_STORAGE_KEY = "ax-preq-draft-v1";
 
 const statusEl = document.querySelector("#saveStatus");
 const form = document.querySelector("#preqForm");
@@ -274,6 +275,60 @@ function renderAllQuestions() {
 function valueOf(name) {
   const field = form.elements[name];
   return field ? String(field.value || "").trim() : "";
+}
+
+function collectFormData() {
+  const data = {};
+  [...form.elements].forEach((field) => {
+    if (!field.name) return;
+    data[field.name] = field.value || "";
+  });
+  return data;
+}
+
+function applyFormData(data) {
+  Object.entries(data || {}).forEach(([name, value]) => {
+    const field = form.elements[name];
+    if (field) field.value = value;
+  });
+}
+
+function saveDraft(showMessage = false) {
+  const payload = {
+    savedAt: new Date().toISOString(),
+    values: collectFormData()
+  };
+  localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(payload));
+  if (showMessage) setStatus("임시저장 완료", "ok");
+}
+
+function loadDraft() {
+  const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+  if (!raw) return false;
+
+  try {
+    const payload = JSON.parse(raw);
+    applyFormData(payload.values);
+    setStatus("임시저장 내용 불러옴", "ok");
+    return true;
+  } catch {
+    localStorage.removeItem(DRAFT_STORAGE_KEY);
+    return false;
+  }
+}
+
+function resetDraft() {
+  const confirmed = window.confirm("현재 작성 내용과 임시저장 내용을 모두 지우고 새로 작성할까요?");
+  if (!confirmed) return;
+
+  localStorage.removeItem(DRAFT_STORAGE_KEY);
+  form.reset();
+  form.elements.date.value = getLocalDateValue();
+  renderQuestions("roleSpecific", roleSpecificSets[roleQuestionSet.value]);
+  preview.hidden = true;
+  preview.textContent = "";
+  preview.classList.remove("successPreview");
+  setStatus("새 작성 시작");
 }
 
 function answerBlock(section) {
@@ -481,6 +536,7 @@ async function submitForm(event) {
   openMailDraft(markdown, savedFileName);
   setStatus("저장 완료 / 메일 창에서 파일 첨부 후 발송", "ok");
   showSuccessMessage(savedFileName);
+  saveDraft(false);
 }
 
 function validateRequiredFields() {
@@ -513,10 +569,15 @@ function getLocalDateValue() {
 
 renderAllQuestions();
 form.elements.date.value = getLocalDateValue();
+loadDraft();
 
 roleQuestionSet.addEventListener("change", () => {
   renderQuestions("roleSpecific", roleSpecificSets[roleQuestionSet.value]);
+  saveDraft(false);
 });
+
+form.addEventListener("input", () => saveDraft(false));
+form.addEventListener("change", () => saveDraft(false));
 
 document.querySelector("#previewBtn").addEventListener("click", () => {
   preview.hidden = !preview.hidden;
@@ -524,5 +585,7 @@ document.querySelector("#previewBtn").addEventListener("click", () => {
   preview.textContent = buildMarkdown();
 });
 
+document.querySelector("#draftSaveBtn").addEventListener("click", () => saveDraft(true));
+document.querySelector("#resetDraftBtn").addEventListener("click", resetDraft);
 document.querySelector("#downloadBtn").addEventListener("click", downloadMarkdown);
 form.addEventListener("submit", submitForm);

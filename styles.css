@@ -369,6 +369,15 @@ code {
     grid-template-columns: 1fr;
   }
 
+  .buttonRow {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .buttonRow button {
+    width: 100%;
+  }
+
   input[type="date"],
   input,
   select,
