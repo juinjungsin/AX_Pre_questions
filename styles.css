@@ -48,6 +48,24 @@ body {
   backdrop-filter: blur(10px);
 }
 
+.brandHeader {
+  display: grid;
+  grid-template-columns: minmax(260px, 460px) minmax(180px, 1fr);
+  gap: 24px;
+  align-items: center;
+}
+
+.brandLogo {
+  display: block;
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+}
+
+.brandCopy {
+  min-width: 0;
+}
+
 .eyebrow {
   margin: 0 0 4px;
   color: var(--accent);
@@ -325,6 +343,14 @@ button.secondary:hover {
   font-size: 13px;
 }
 
+.footerLockup {
+  display: block;
+  width: min(760px, 100%);
+  height: auto;
+  margin: 0 auto 18px;
+  border-radius: 8px;
+}
+
 .footer p {
   margin: 4px 0;
 }
@@ -340,6 +366,15 @@ code {
     position: static;
     display: block;
     padding: 18px;
+  }
+
+  .brandHeader {
+    display: block;
+  }
+
+  .brandLogo {
+    max-width: 100%;
+    margin-bottom: 12px;
   }
 
   .status {
@@ -390,5 +425,9 @@ code {
 
   .footer {
     width: calc(100% - 24px);
+  }
+
+  .footerLockup {
+    width: 100%;
   }
 }

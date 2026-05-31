@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 170" role="img" aria-labelledby="title desc">
+  <title id="title">실꾸답연구소 Footer Lockup</title>
+  <desc id="desc">Dark footer lockup for Silkkudap Lab with Korean logotype and consulting services.</desc>
+  <defs>
+    <linearGradient id="footerBg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#1E2328"/>
+      <stop offset="1" stop-color="#111820"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0EA5A0"/>
+      <stop offset="1" stop-color="#087A77"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1120" height="170" rx="14" fill="url(#footerBg)"/>
+  <g transform="translate(54 39) scale(.65)">
+    <path d="M94 46 38 72 0 58 56 31Z" fill="#10161B"/>
+    <path d="M60 33 5 59M78 40 25 67M37 42 81 57M19 51 61 65" stroke="#fff" stroke-width="2" opacity=".86"/>
+    <path d="M146 34 214 70 165 110 104 74Z" fill="url(#teal)"/>
+    <path d="M140 61c22 10 38 15 54 9" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/>
+    <path d="M194 57 215 57 207 77Z" fill="#fff" transform="rotate(27 204 67)"/>
+    <path d="M43 101 166 38 156 31 33 94Z" fill="#F5A623"/>
+    <path d="M60 90C88 31 126 29 159 79" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/>
+    <path d="M117 4 123 28 147 34 123 40 117 64 111 40 87 34 111 28Z" fill="#F5A623"/>
+  </g>
+  <line x1="190" y1="36" x2="190" y2="134" stroke="#FFFFFF" stroke-opacity=".65" stroke-width="2"/>
+  <g transform="translate(220 42)">
+    <text x="0" y="48" font-family="Pretendard, Malgun Gothic, Arial, sans-serif" font-size="42" font-weight="800" fill="#FFFFFF">실꾸답연구소</text>
+    <line x1="3" y1="76" x2="61" y2="76" stroke="#0EA5A0" stroke-width="3"/>
+    <text x="78" y="86" font-family="Pretendard, Arial, sans-serif" font-size="22" font-weight="700" fill="#0EA5A0">Silkkudap Lab</text>
+    <line x1="244" y1="76" x2="302" y2="76" stroke="#0EA5A0" stroke-width="3"/>
+  </g>
+  <line x1="560" y1="36" x2="560" y2="134" stroke="#FFFFFF" stroke-opacity=".65" stroke-width="2"/>
+  <g transform="translate(590 54)" font-family="Pretendard, Arial, sans-serif" fill="#FFFFFF">
+    <text x="0" y="0" font-size="18">Keep doing. Keep going. That is the answer.</text>
+    <text x="0" y="48" font-size="17">AX 컨설팅  |  AI 전환  |  교육·강의  |  실행·현장</text>
+  </g>
+</svg>
