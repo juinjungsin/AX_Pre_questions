@@ -235,6 +235,7 @@ const statusEl = document.querySelector("#saveStatus");
 const form = document.querySelector("#preqForm");
 const preview = document.querySelector("#preview");
 const roleQuestionSet = document.querySelector("#roleQuestionSet");
+let selectedDirectoryHandle = null;
 
 function setStatus(text, type = "") {
   statusEl.textContent = text;
@@ -384,12 +385,71 @@ function downloadMarkdown() {
   URL.revokeObjectURL(url);
 }
 
+async function pickSaveFolder() {
+  if (!("showDirectoryPicker" in window)) {
+    setStatus("이 브라우저는 폴더 직접 저장을 지원하지 않습니다", "error");
+    preview.hidden = false;
+    preview.textContent = [
+      "현재 브라우저에서는 폴더 선택 저장을 지원하지 않습니다.",
+      "",
+      "대안:",
+      "1. Chrome 또는 Edge 최신 버전에서 다시 열기",
+      "2. node server.js로 실행 후 http://localhost:4173 접속",
+      "3. .md 다운로드 버튼으로 파일 저장"
+    ].join("\n");
+    return;
+  }
+
+  try {
+    selectedDirectoryHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+    await selectedDirectoryHandle.getDirectoryHandle("submissions", { create: true });
+    setStatus("저장 폴더 선택 완료", "ok");
+  } catch (error) {
+    if (error.name === "AbortError") {
+      setStatus("저장 폴더 선택 취소");
+      return;
+    }
+    setStatus("저장 폴더 선택 실패", "error");
+    preview.hidden = false;
+    preview.textContent = `저장 폴더를 선택하지 못했습니다.\n${error.message}`;
+  }
+}
+
+async function saveMarkdownToPickedFolder(markdown) {
+  if (!selectedDirectoryHandle) return null;
+
+  const submissionsHandle = await selectedDirectoryHandle.getDirectoryHandle("submissions", { create: true });
+  const fileHandle = await submissionsHandle.getFileHandle(fileName(), { create: true });
+  const writable = await fileHandle.createWritable();
+  await writable.write(markdown + "\n");
+  await writable.close();
+
+  return `${selectedDirectoryHandle.name}/submissions/${fileName()}`;
+}
+
 async function submitForm(event) {
   event.preventDefault();
   if (!validateRequiredFields()) return;
 
   const markdown = buildMarkdown();
   setStatus("저장/발송 중...");
+  let pickedFolderPath = null;
+
+  try {
+    pickedFolderPath = await saveMarkdownToPickedFolder(markdown);
+  } catch (error) {
+    setStatus("선택한 폴더 저장 실패", "error");
+    preview.hidden = false;
+    preview.textContent = [
+      "선택한 폴더에 저장하지 못했습니다.",
+      error.message,
+      "",
+      "브라우저 권한이 끊겼을 수 있습니다. '내 PC 저장 폴더 선택'을 다시 눌러주세요.",
+      "",
+      markdown
+    ].join("\n");
+    return;
+  }
 
   try {
     const response = await fetch("/submit", {
@@ -407,14 +467,40 @@ async function submitForm(event) {
     const result = await response.json();
     if (!result.ok) throw new Error(result.error || "Save failed");
 
+    const localText = pickedFolderPath ? `선택 폴더 저장 완료: ${pickedFolderPath}` : "서버 폴더 저장 완료";
     const mailText = result.mail?.sent ? "이메일 발송 완료" : `이메일 미발송: ${result.mail?.reason || "SMTP 미설정"}`;
-    setStatus(`저장 완료 / ${mailText}`, result.mail?.sent ? "ok" : "");
+    setStatus(`저장 완료 / ${mailText}`, "ok");
     preview.hidden = false;
-    preview.textContent = `저장 파일: ${result.fileName}\n저장 경로: ${result.filePath}\n${mailText}\n\n` + markdown;
+    preview.textContent = `${localText}\n서버 저장 파일: ${result.fileName}\n서버 저장 경로: ${result.filePath}\n${mailText}\n\n` + markdown;
   } catch (error) {
-    setStatus("서버 저장 실패: 다운로드 가능", "error");
+    if (pickedFolderPath) {
+      setStatus("내 PC 저장 완료 / 서버 연결 없음", "ok");
+      preview.hidden = false;
+      preview.textContent = [
+        `내 PC 저장 완료: ${pickedFolderPath}`,
+        "",
+        "서버 저장과 메일 발송은 실행되지 않았습니다.",
+        "페이지를 파일로 열었거나 GitHub 정적 페이지에서 실행 중이면 정상적인 상황입니다.",
+        "메일 발송까지 필요하면 node server.js로 실행하고 SMTP 설정을 해야 합니다.",
+        "",
+        markdown
+      ].join("\n");
+      return;
+    }
+
+    setStatus("저장 실패: 폴더 선택 또는 다운로드 필요", "error");
     preview.hidden = false;
-    preview.textContent = `서버 저장에 실패했습니다.\n${error.message}\n\n아래 Markdown을 다운로드하거나 복사해 사용하세요.\n\n${markdown}`;
+    preview.textContent = [
+      "저장 서버에 연결하지 못했습니다.",
+      error.message,
+      "",
+      "해결 방법:",
+      "1. '내 PC 저장 폴더 선택'을 누른 뒤 다시 작성 완료를 누르세요.",
+      "2. 또는 '.md 다운로드' 버튼으로 파일을 직접 저장하세요.",
+      "3. 메일 발송까지 필요하면 node server.js로 실행하고 SMTP 설정을 해야 합니다.",
+      "",
+      markdown
+    ].join("\n");
   }
 }
 
@@ -450,5 +536,6 @@ document.querySelector("#previewBtn").addEventListener("click", () => {
   preview.textContent = buildMarkdown();
 });
 
+document.querySelector("#pickFolderBtn").addEventListener("click", pickSaveFolder);
 document.querySelector("#downloadBtn").addEventListener("click", downloadMarkdown);
 form.addEventListener("submit", submitForm);
