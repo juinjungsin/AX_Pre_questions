@@ -420,6 +420,23 @@ function openMailDraft(markdown, savedPath) {
   window.location.href = mailto;
 }
 
+function showSuccessMessage(savedFileName) {
+  preview.hidden = false;
+  preview.classList.add("successPreview");
+  preview.textContent = [
+    `내 PC 저장 완료: ${savedFileName || fileName()}`,
+    "",
+    "기본 메일 앱 작성 화면을 열었습니다. Gmail이나 Outlook이 기본 메일로 설정되어 있으면 그 화면에서 내용을 확인하고 보내면 됩니다.",
+    `메일 작성 링크: mailto:${MAIL_TO}`
+  ].join("\n");
+}
+
+function showNoticeMessage(lines) {
+  preview.hidden = false;
+  preview.classList.remove("successPreview");
+  preview.textContent = lines.join("\n");
+}
+
 async function submitForm(event) {
   event.preventDefault();
   if (!validateRequiredFields()) return;
@@ -433,29 +450,23 @@ async function submitForm(event) {
   } catch (error) {
     if (error.name === "AbortError") {
       setStatus("파일 저장 취소", "error");
-      preview.hidden = false;
-      preview.textContent = [
+      showNoticeMessage([
         "파일 저장을 취소했습니다.",
         "",
-        "작성 내용은 아래 Markdown 미리보기에 남아 있습니다.",
-        "다시 저장하려면 '작성 완료: 저장 및 발송'을 누르거나 '.md 다운로드'를 사용하세요.",
-        "",
-        markdown
-      ].join("\n");
+        "작성 내용은 현재 화면 입력칸에 그대로 남아 있습니다.",
+        "다시 저장하려면 '작성 완료: 저장 및 발송'을 누르거나 '.md 다운로드'를 사용하세요."
+      ]);
       return;
     }
     setStatus("내 PC 파일 저장 실패", "error");
-    preview.hidden = false;
-    preview.textContent = [
+    showNoticeMessage([
       "내 PC에 .md 파일을 저장하지 못했습니다.",
       error.message,
       "",
       "대안:",
       "1. '.md 다운로드' 버튼으로 파일을 직접 저장하세요.",
-      "2. Chrome 또는 Edge 최신 버전에서 다시 시도하세요.",
-      "",
-      markdown
-    ].join("\n");
+      "2. Chrome 또는 Edge 최신 버전에서 다시 시도하세요."
+    ]);
     return;
   }
 
@@ -477,30 +488,25 @@ async function submitForm(event) {
 
     openMailDraft(markdown, savedFileName);
     setStatus("저장 완료 / 메일 창에서 파일 첨부 후 발송", "ok");
-    preview.hidden = true;
-    preview.textContent = "";
+    showSuccessMessage(savedFileName);
   } catch (error) {
     if (savedFileName) {
       openMailDraft(markdown, savedFileName);
       setStatus("저장 완료 / 메일 창에서 파일 첨부 후 발송", "ok");
-      preview.hidden = true;
-      preview.textContent = "";
+      showSuccessMessage(savedFileName);
       return;
     }
 
     setStatus("저장 실패: 폴더 선택 또는 다운로드 필요", "error");
-    preview.hidden = false;
-    preview.textContent = [
+    showNoticeMessage([
       "저장 서버에 연결하지 못했습니다.",
       error.message,
       "",
       "해결 방법:",
       "1. '.md 다운로드' 버튼으로 파일을 직접 저장하세요.",
       "2. Chrome 또는 Edge 최신 버전에서 다시 시도하세요.",
-      "3. 메일 발송까지 필요하면 node server.js로 실행하고 SMTP 설정을 해야 합니다.",
-      "",
-      markdown
-    ].join("\n");
+      "3. 메일 발송까지 필요하면 node server.js로 실행하고 SMTP 설정을 해야 합니다."
+    ]);
   }
 }
 
@@ -541,6 +547,7 @@ roleQuestionSet.addEventListener("change", () => {
 
 document.querySelector("#previewBtn").addEventListener("click", () => {
   preview.hidden = !preview.hidden;
+  preview.classList.remove("successPreview");
   preview.textContent = buildMarkdown();
 });
 
