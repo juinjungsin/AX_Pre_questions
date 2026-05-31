@@ -238,7 +238,6 @@ const statusEl = document.querySelector("#saveStatus");
 const form = document.querySelector("#preqForm");
 const preview = document.querySelector("#preview");
 const roleQuestionSet = document.querySelector("#roleQuestionSet");
-let selectedDirectoryHandle = null;
 
 function setStatus(text, type = "") {
   statusEl.textContent = text;
@@ -388,63 +387,23 @@ function downloadMarkdown() {
   URL.revokeObjectURL(url);
 }
 
-async function pickSaveFolder() {
-  if (!("showDirectoryPicker" in window)) {
-    setStatus("이 브라우저는 폴더 직접 저장을 지원하지 않습니다", "error");
-    preview.hidden = false;
-    preview.textContent = [
-      "현재 브라우저에서는 폴더 선택 저장을 지원하지 않습니다.",
-      "",
-      "대안:",
-      "1. Chrome 또는 Edge 최신 버전에서 다시 열기",
-      "2. node server.js로 실행 후 http://localhost:4173 접속",
-      "3. .md 다운로드 버튼으로 파일 저장"
-    ].join("\n");
-    return;
-  }
+async function saveMarkdownWithFilePicker(markdown) {
+  if (!("showSaveFilePicker" in window)) return null;
 
-  try {
-    selectedDirectoryHandle = await window.showDirectoryPicker({ mode: "readwrite" });
-    await selectedDirectoryHandle.getDirectoryHandle("submissions", { create: true });
-    setStatus("저장 폴더 선택 완료", "ok");
-  } catch (error) {
-    if (error.name === "AbortError") {
-      setStatus("저장 폴더 선택 취소");
-      return;
-    }
-    setStatus("저장 폴더 선택 실패", "error");
-    preview.hidden = false;
-    preview.textContent = `저장 폴더를 선택하지 못했습니다.\n${error.message}`;
-  }
-}
-
-async function ensureSaveFolder() {
-  if (selectedDirectoryHandle) return true;
-  if (!("showDirectoryPicker" in window)) return false;
-
-  try {
-    selectedDirectoryHandle = await window.showDirectoryPicker({ mode: "readwrite" });
-    await selectedDirectoryHandle.getDirectoryHandle("submissions", { create: true });
-    return true;
-  } catch (error) {
-    if (error.name === "AbortError") {
-      setStatus("저장 폴더 선택 취소", "error");
-      return false;
-    }
-    throw error;
-  }
-}
-
-async function saveMarkdownToPickedFolder(markdown) {
-  if (!selectedDirectoryHandle) return null;
-
-  const submissionsHandle = await selectedDirectoryHandle.getDirectoryHandle("submissions", { create: true });
-  const fileHandle = await submissionsHandle.getFileHandle(fileName(), { create: true });
+  const fileHandle = await window.showSaveFilePicker({
+    suggestedName: fileName(),
+    types: [
+      {
+        description: "Markdown 문서",
+        accept: { "text/markdown": [".md"] }
+      }
+    ]
+  });
   const writable = await fileHandle.createWritable();
   await writable.write(markdown + "\n");
   await writable.close();
 
-  return `${selectedDirectoryHandle.name}/submissions/${fileName()}`;
+  return fileHandle.name;
 }
 
 function openMailDraft(markdown, savedPath) {
@@ -475,34 +434,33 @@ async function submitForm(event) {
 
   const markdown = buildMarkdown();
   setStatus("내 PC에 저장 중...");
-  let pickedFolderPath = null;
+  let savedFileName = null;
 
   try {
-    if (!selectedDirectoryHandle) {
-      const hasFolder = await ensureSaveFolder();
-      if (!hasFolder) {
-        preview.hidden = false;
-        preview.textContent = [
-          "내 PC 저장 폴더를 선택하지 않아 자동 저장을 진행하지 못했습니다.",
-          "",
-          "해결 방법:",
-          "1. '내 PC 저장 폴더 선택'을 누른 뒤 다시 작성 완료를 누르세요.",
-          "2. 또는 '.md 다운로드' 버튼으로 파일을 직접 저장하세요.",
-          "",
-          markdown
-        ].join("\n");
-        return;
-      }
-    }
-    pickedFolderPath = await saveMarkdownToPickedFolder(markdown);
+    savedFileName = await saveMarkdownWithFilePicker(markdown);
   } catch (error) {
-    setStatus("선택한 폴더 저장 실패", "error");
+    if (error.name === "AbortError") {
+      setStatus("파일 저장 취소", "error");
+      preview.hidden = false;
+      preview.textContent = [
+        "파일 저장을 취소했습니다.",
+        "",
+        "작성 내용은 아래 Markdown 미리보기에 남아 있습니다.",
+        "다시 저장하려면 '작성 완료: 저장 및 발송'을 누르거나 '.md 다운로드'를 사용하세요.",
+        "",
+        markdown
+      ].join("\n");
+      return;
+    }
+    setStatus("내 PC 파일 저장 실패", "error");
     preview.hidden = false;
     preview.textContent = [
-      "선택한 폴더에 저장하지 못했습니다.",
+      "내 PC에 .md 파일을 저장하지 못했습니다.",
       error.message,
       "",
-      "브라우저 권한이 끊겼을 수 있습니다. '내 PC 저장 폴더 선택'을 다시 눌러주세요.",
+      "대안:",
+      "1. '.md 다운로드' 버튼으로 파일을 직접 저장하세요.",
+      "2. Chrome 또는 Edge 최신 버전에서 다시 시도하세요.",
       "",
       markdown
     ].join("\n");
@@ -525,9 +483,9 @@ async function submitForm(event) {
     const result = await response.json();
     if (!result.ok) throw new Error(result.error || "Save failed");
 
-    const localText = pickedFolderPath ? `내 PC 저장 완료: ${pickedFolderPath}` : "서버 폴더 저장 완료";
+    const localText = savedFileName ? `내 PC 저장 완료: ${savedFileName}` : "브라우저 파일 저장 기능 미지원";
     const mailText = result.mail?.sent ? "이메일 발송 완료" : `이메일 미발송: ${result.mail?.reason || "SMTP 미설정"}`;
-    const mailto = openMailDraft(markdown, pickedFolderPath);
+    const mailto = openMailDraft(markdown, savedFileName);
     setStatus("내 PC 저장 완료 / 메일 작성 화면 열림", "ok");
     preview.hidden = false;
     preview.textContent = [
@@ -542,12 +500,12 @@ async function submitForm(event) {
       markdown
     ].join("\n");
   } catch (error) {
-    if (pickedFolderPath) {
-      const mailto = openMailDraft(markdown, pickedFolderPath);
+    if (savedFileName) {
+      const mailto = openMailDraft(markdown, savedFileName);
       setStatus("내 PC 저장 완료 / 메일 작성 화면 열림", "ok");
       preview.hidden = false;
       preview.textContent = [
-        `내 PC 저장 완료: ${pickedFolderPath}`,
+        `내 PC 저장 완료: ${savedFileName}`,
         "",
         "기본 메일 앱 작성 화면을 열었습니다. Gmail이나 Outlook이 기본 메일로 설정되어 있으면 그 화면에서 내용을 확인하고 보내면 됩니다.",
         `메일 작성 링크: ${mailto}`,
@@ -567,8 +525,8 @@ async function submitForm(event) {
       error.message,
       "",
       "해결 방법:",
-      "1. '내 PC 저장 폴더 선택'을 누른 뒤 다시 작성 완료를 누르세요.",
-      "2. 또는 '.md 다운로드' 버튼으로 파일을 직접 저장하세요.",
+      "1. '.md 다운로드' 버튼으로 파일을 직접 저장하세요.",
+      "2. Chrome 또는 Edge 최신 버전에서 다시 시도하세요.",
       "3. 메일 발송까지 필요하면 node server.js로 실행하고 SMTP 설정을 해야 합니다.",
       "",
       markdown
@@ -616,6 +574,5 @@ document.querySelector("#previewBtn").addEventListener("click", () => {
   preview.textContent = buildMarkdown();
 });
 
-document.querySelector("#pickFolderBtn").addEventListener("click", pickSaveFolder);
 document.querySelector("#downloadBtn").addEventListener("click", downloadMarkdown);
 form.addEventListener("submit", submitForm);
