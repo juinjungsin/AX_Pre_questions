@@ -16,6 +16,12 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -149,6 +155,7 @@ h2 {
 
 label {
   display: block;
+  min-width: 0;
   color: #374151;
   font-size: 14px;
   font-weight: 700;
@@ -157,6 +164,9 @@ label {
 input,
 select,
 textarea {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
   width: 100%;
   margin-top: 7px;
   padding: 11px 12px;
@@ -338,8 +348,9 @@ code {
 
   .layout {
     display: block;
-    width: min(100% - 24px, 760px);
+    width: 100%;
     margin-top: 18px;
+    padding: 0 12px;
   }
 
   .nav {
@@ -351,9 +362,24 @@ code {
 
   .section {
     padding: 20px;
+    overflow: hidden;
   }
 
   .grid.two {
     grid-template-columns: 1fr;
+  }
+
+  input[type="date"],
+  input,
+  select,
+  textarea {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    font-size: 16px;
+  }
+
+  .footer {
+    width: calc(100% - 24px);
   }
 }
