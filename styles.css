@@ -225,6 +225,28 @@ textarea:focus {
   font-size: 14px;
 }
 
+.saveGuide {
+  margin: -6px 0 18px;
+  padding: 16px;
+  border: 1px solid #d8e3f7;
+  border-radius: 8px;
+  background: #f7faff;
+  color: #344054;
+  font-size: 14px;
+}
+
+.saveGuide p {
+  margin: 0 0 8px;
+}
+
+.saveGuide p:last-child {
+  margin-bottom: 0;
+}
+
+.saveGuide strong {
+  color: var(--accent);
+}
+
 .buttonRow {
   display: flex;
   flex-wrap: wrap;
